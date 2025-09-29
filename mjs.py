@@ -77,7 +77,7 @@ contest_data = response3.json()["data"]["record_list"]
 
 os.mkdir(CSV_OUTPUT_DIR)
 # Output CSV filename
-csv_file = f"${CSV_OUTPUT_DIR}/results_season_{SEASON_ID}.csv"
+csv_file = f"{CSV_OUTPUT_DIR}/results_season_{SEASON_ID}.csv"
 
 # Define CSV column headers
 headers = [
