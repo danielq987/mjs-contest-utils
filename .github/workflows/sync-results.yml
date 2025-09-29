@@ -1,0 +1,43 @@
+name: Export and Upload MahjongSoul Data
+
+on:
+  workflow_dispatch:  # Allows manual trigger from the GitHub UI
+
+jobs:
+  run-export:
+    runs-on: ubuntu-latest
+
+    env:
+      MJS_SECRET: ${{ secrets.MJS_SECRET }}
+      CSV_OUTPUT_DIR: output
+      MJS_SEASON_ID: 1
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ▶️ Run mjs.py
+        run: |
+          python mjs.py
+
+      - name: ☁️ Upload output.csv to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-2'  # Change if your bucket is in a different region
+          SOURCE_DIR: ${{ env.CSV_OUTPUT_DIR }}  # Uploads from current directory
+          DEST_DIR: 'results'  # Folder in your S3 bucket

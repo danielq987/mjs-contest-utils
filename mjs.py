@@ -4,9 +4,14 @@ import requests
 import json
 import os
 
-MJS_DANIEL_MYSTERY_TOKEN=os.environ['MJS_SECRET']
+MJS_DANIEL_MYSTERY_TOKEN=os.getenv('MJS_SECRET')
+CSV_OUTPUT_DIR=os.getenv('CSV_OUTPUT_DIR', 'output')
 MJS_UID = "42474300"
 CONTEST_ID = "31334372"
+SEASON_ID = os.getenv('MJS_SEASON_ID', 1)
+
+if not MJS_DANIEL_MYSTERY_TOKEN:
+    raise ValueError("No Token Provided")
 
 # Step 1: Exchange initial token for accessToken
 login_url = 'https://passport.mahjongsoul.com/user/login'
@@ -54,7 +59,7 @@ contest_url = (
 )
 params = {
     "unique_id": CONTEST_ID,  # Replace with your actual contest ID
-    "season_id": 1,
+    "season_id": SEASON_ID,
     "offset": 0,
     "limit": 1000
 }
@@ -70,12 +75,9 @@ response3.raise_for_status()
 # Final JSON result saved as dictionary
 contest_data = response3.json()["data"]["record_list"]
 
-# Optional: Save to file for inspection
-with open('contest_game_records.json', 'w', encoding='utf-8') as f:
-    json.dump(contest_data, f, indent=2, ensure_ascii=False)
-
+os.mkdir(CSV_OUTPUT_DIR)
 # Output CSV filename
-csv_file = 'output.csv'
+csv_file = f"${CSV_OUTPUT_DIR}/results_season_{SEASON_ID}.csv"
 
 # Define CSV column headers
 headers = [
