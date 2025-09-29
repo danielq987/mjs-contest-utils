@@ -3,7 +3,7 @@
 ## `mjs.py`
 
 Updates https://dyto4lbher7lu.cloudfront.net/results/results_season_1.csv with the results.
-See [workflow file](.github/workflows/sync_results.yml) to edit the season, or other parameters.
+See [workflow file](.github/workflows/sync-results.yml) to edit the season, or other parameters.
 
 ## `league-scheduling.py`
 
