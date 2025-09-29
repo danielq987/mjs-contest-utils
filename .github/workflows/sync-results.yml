@@ -1,6 +1,16 @@
 name: Export and Upload MahjongSoul Data
 
 on:
+  schedule:
+    - cron: '30,35,40,45,50,55 1 * * 5-7'
+    # 9:00 PM to 9:50 PM EST == 02:00–02:50 UTC
+    - cron: '0,10,20,30,35,40,45,50,55 2 * * 5-7'
+    # 10:00 PM to 10:50 PM EST == 03:00–03:50 UTC
+    - cron: '0,10,20,30,35,40,45,50,55 3 * * 5-7'
+    # 11:00 PM to 11:30 PM EST == 04:00–04:30 UTC
+    - cron: '0,10,20,30,35,40,45,50,55 4 * * 5-7'
+    # Run at least once a day around midnight
+    - cron: '0 5 * * *'
   workflow_dispatch:  # Allows manual trigger from the GitHub UI
 
 jobs:
@@ -35,7 +45,6 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'  # Change if your bucket is in a different region
