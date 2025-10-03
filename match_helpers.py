@@ -19,7 +19,7 @@ for round_games in schedule:
 
 MJS_DANIEL_MYSTERY_TOKEN=os.getenv('MJS_SECRET')
 CSV_OUTPUT_DIR=os.getenv('CSV_OUTPUT_DIR', 'output')
-MJS_UID = os.getenv('MJS_UID', "42474300")
+MJS_UID = "42474300"
 CONTEST_ID = "31334372"
 SEASON_ID = os.getenv('MJS_SEASON_ID', 1)
 

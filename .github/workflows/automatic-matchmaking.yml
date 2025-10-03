@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MJS_SECRET: ${{ secrets.MJS_SECRET }}
-      MJS_UID: ${{ secrets.MJS_UID }}
       MJS_SEASON_ID: 2 # EDIT THIS TO CHANGE THE SEASON
       # 1 - Spring 25
       # 2 - Fall 25
