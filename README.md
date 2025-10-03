@@ -2,8 +2,11 @@
 
 ## `mjs.py`
 
-Updates https://dyto4lbher7lu.cloudfront.net/results/results_season_1.csv with the results.
-See [workflow file](.github/workflows/sync-results.yml) to edit the season, or other parameters.
+Connects to MJS Contest API:
+
+- Updates https://dyto4lbher7lu.cloudfront.net/results/results_season_1.csv with the results.
+    - See [workflow file](.github/workflows/sync-results.yml) to edit the season, or other parameters.
+- Checks whether a match can be started, and starts it if possible.
 
 ## `league-scheduling.py`
 
