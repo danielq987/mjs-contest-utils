@@ -1,0 +1,49 @@
+name: automatic-matchmaking
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Command to run"
+        type: choice
+        options: [start-round, start-match, wait]
+        default: start-round
+      round_index:
+        description: "Round index (0-based) for start-round"
+        type: number
+        default: 0
+      teams:
+        description: "Team indexes (space-separated) for start-match/wait"
+        type: string
+        default: "0 1 2 3"
+      dry_run:
+        description: "Do not hit create_game_plan; print payload only"
+        type: boolean
+        default: true
+
+jobs:
+  matchmaking:
+    runs-on: ubuntu-latest
+    env:
+      MJS_SECRET: ${{ secrets.MJS_SECRET }}
+      MJS_SEASON_ID: 2 # EDIT THIS TO CHANGE THE SEASON
+      # 1 - Spring 25
+      # 2 - Fall 25
+      CSV_OUTPUT_DIR: output
+      DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - run: python -m pip install -r requirements.txt
+      - name: Start round
+        if: ${{ inputs.mode == 'start-round' }}
+        run: python match_helpers.py start-round ${{ inputs.round_index }}
+      - name: Start match
+        if: ${{ inputs.mode == 'start-match' }}
+        run: python match_helpers.py start-match ${{ inputs.teams }}
+      - name: Show waiting players
+        if: ${{ inputs.mode == 'wait' }}
+        run: python match_helpers.py wait ${{ inputs.teams }}

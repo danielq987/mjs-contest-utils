@@ -12,11 +12,9 @@ MAX_SIMUL_GAMES = NUM_PLAYERS // 4
 SIMUL_PLAYERS = MAX_SIMUL_GAMES * 4
 
 # Rounds are sets of games played simultaneously.
-# We don't need to seperate into weeks.
-ROUNDS = 24
-
-#Only for saving schedule to CSV
+WEEKS = 6
 ROUNDS_PER_WEEK = 4
+ROUNDS = WEEKS * ROUNDS_PER_WEEK
 
 # Check if it is possible each player will play an equal number of games
 # Warns if not possible
@@ -177,7 +175,6 @@ def save_schedule_to_csv(schedule, filename="schedule.csv"):
             for g_idx, game in enumerate(round_games, start=1):
                 seats = list(game)  # (p0, p1, p2, p3)
                 writer.writerow([week, round_in_week, global_round, g_idx, *seats])
-    
 
 schedule = create_schedule()
 save_schedule_to_csv(schedule)

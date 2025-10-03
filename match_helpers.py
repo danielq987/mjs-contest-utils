@@ -1,22 +1,27 @@
-import json
-import csv
 from time import time
 import requests
 import os
-from dotenv import load_dotenv
 import auth
 import read_csv
 
-# Load environment variables from .env file
-load_dotenv()
+teams, team_names = read_csv.get_teams()
+if not teams: raise ValueError("No teams found in CSV.")
+
+schedule = read_csv.get_schedule()
+if not schedule: raise ValueError("No schedule found in CSV.")
+
+#Checks whether schedule is valid (team indexes in range)
+for round_games in schedule:
+    for game in round_games:
+        for t in game:
+            if t < 0 or t >= len(team_names):
+                raise ValueError(f"Invalid team index {t} in schedule.")
 
 MJS_DANIEL_MYSTERY_TOKEN=os.getenv('MJS_SECRET')
 CSV_OUTPUT_DIR=os.getenv('CSV_OUTPUT_DIR', 'output')
-MJS_UID = os.getenv("MJS_UID")
+MJS_UID = os.getenv('MJS_UID', "42474300")
 CONTEST_ID = "31334372"
 SEASON_ID = os.getenv('MJS_SEASON_ID', 1)
-
-
 
 TOKEN = auth.get_auth_token(MJS_DANIEL_MYSTERY_TOKEN, MJS_UID)
 if not TOKEN: raise ValueError("Failed to retrieve auth token.")
@@ -27,14 +32,6 @@ CONTEST_HEADERS = {
     'authorization': f'Majsoul {TOKEN}',
     'origin': 'https://mahjongsoul.tournament.yo-star.com'
 }
-
-
-
-teams, team_names = read_csv.get_teams()
-if not teams: raise ValueError("No teams found in CSV.")
-
-schedule = read_csv.get_schedule()
-if not schedule: raise ValueError("No schedule found in CSV.")
 
 # Takes a tuple of team indexes and returns a list of player ids if all players are in the waiting room. Otherwise, returns an empty list.
 def get_waiting_players(team_indexes):
@@ -63,7 +60,6 @@ def get_waiting_players(team_indexes):
     return players
 
 def start_match(players):
-    
     START_URL = f"{CONTEST_URL}/contest/create_game_plan"
     start_payload = {
         "account_list": players,
@@ -75,6 +71,12 @@ def start_match(players):
         "shuffle_seats": False,
         "unique_id": CONTEST_ID,
     }
+
+    # Dry-run mode for CI
+    if str(os.getenv("DRY_RUN", "")).lower() in ("1", "true", "yes"):
+        print("[DRY_RUN] Would create game plan:", start_payload)
+        return {"dry_run": True, "payload": start_payload}
+
     response = requests.post(START_URL, headers=CONTEST_HEADERS, json=start_payload)
     response.raise_for_status()
     match_data = response.json()
@@ -106,5 +108,26 @@ def start_scheduled_matches(schedule_index):
 
     return schedule_index + 1
 
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Mahjong Soul contest matchmaking")
+    sub = parser.add_subparsers(dest="cmd", required=True)
 
-start_scheduled_matches(0)
+    p_round = sub.add_parser("start-round", help="Start all matches for a schedule round (0-based index)")
+    p_round.add_argument("index", type=int)
+
+    p_match = sub.add_parser("start-match", help="Start a single match from 4 team indexes")
+    p_match.add_argument("teams", nargs=4, type=int, help="Four team indexes (0-based)")
+
+    p_wait = sub.add_parser("wait", help="Show waiting players for given team indexes")
+    p_wait.add_argument("teams", nargs="+", type=int)
+
+    args = parser.parse_args()
+
+    if args.cmd == "start-round":
+        start_scheduled_matches(args.index)
+    elif args.cmd == "start-match":
+        match(tuple(args.teams))
+    elif args.cmd == "wait":
+        players = get_waiting_players(tuple(args.teams))
+        print({"teams": [team_names[i] for i in args.teams], "players": players})
