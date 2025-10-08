@@ -5,15 +5,17 @@ import numpy as np
 import csv
 import math
 
+random.seed(5)
+
 # Configuration
-NUM_PLAYERS = 8
-PLAYERS = list(range(NUM_PLAYERS))
+NUM_PLAYERS = 11
+PLAYERS = list(range(1,NUM_PLAYERS+1))
 MAX_SIMUL_GAMES = NUM_PLAYERS // 4
 SIMUL_PLAYERS = MAX_SIMUL_GAMES * 4
 
 # Rounds are sets of games played simultaneously.
 WEEKS = 6
-ROUNDS_PER_WEEK = 4
+ROUNDS_PER_WEEK = 11
 ROUNDS = WEEKS * ROUNDS_PER_WEEK
 
 # Check if it is possible each player will play an equal number of games
@@ -164,18 +166,54 @@ def create_schedule():
     return schedule
 
 def save_schedule_to_csv(schedule, filename="schedule.csv"):
-    headers = ["week", "round_in_week", "global_round", "game", "seat_0", "seat_1", "seat_2", "seat_3"]
+    headers = ["match_id", "week", "east seat", "south seat", "west seat", "north seat"]
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
         for r_idx, round_games in enumerate(schedule):
             week = (r_idx // ROUNDS_PER_WEEK) + 1
             round_in_week = (r_idx % ROUNDS_PER_WEEK) + 1
-            global_round = r_idx + 1
+            match_id = r_idx + 1
             for g_idx, game in enumerate(round_games, start=1):
                 seats = list(game)  # (p0, p1, p2, p3)
-                writer.writerow([week, round_in_week, global_round, g_idx, *seats])
+                writer.writerow([match_id, week, *seats])
+
+#columns - # of columns to ignore
+def analyze_schedule(path):
+
+    games_played = Counter({s: 0 for s in PLAYERS})
+    pair_counts = Counter({(p1, p2): 0 for p1 in PLAYERS for p2 in PLAYERS if p1 < p2})
+    seat_counts = defaultdict(lambda: Counter({i: 0 for i in range(4)}))  # seat_counts[player][seat] = count
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                players = [row.get(k) for k in ("east seat", "south seat", "west seat", "north seat")]
+                for p, i in zip(players , range(4)):
+                    p = int(p)
+                    games_played[p] += 1
+                    seat_counts[p][i] += 1
+                for a, b in combinations(players, 2):
+                    a, b = int(a), int(b)
+                    k = (a, b) if a < b else (b, a)
+                    pair_counts[k] += 1
+    
+    except Exception as e:
+        print(f"Error analyzing schedule: {e}")
+
+    print(pair_counts)
+    print(games_played)
+    print(seat_counts)
+    print("Best schedule analysis:")
+    print(f"Standard deviation of matchup distribution: {np.std(list(pair_counts.values())):.4f}")
+    print(f"Highest matchup count: {max(pair_counts.values())}")
+    print(f"Lowest matchup count: {min(pair_counts.values())}")
+    overall_seat_counts = [seat_counts[p][s] for p in PLAYERS for s in range(4)]
+    print(f"Standard deviation of seat distribution (overall): {np.std(overall_seat_counts):.4f}")
+    print(f"Highest seat count: {max(overall_seat_counts)}")
+    print(f"Lowest seat count: {min(overall_seat_counts)}")
 
 schedule = create_schedule()
-save_schedule_to_csv(schedule)
+save_schedule_to_csv(schedule, "schedule.csv")
 

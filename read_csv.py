@@ -28,21 +28,13 @@ def get_schedule(path: str = "schedule.csv"):
             rounds = {}
             for row in reader:
                 try:
-                    gr = int(row.get("global_round") or row.get("round") or row.get("Global Round") or 0)
+                    gr = int(row.get("week") or 0)
                     game_idx = int(row.get("game") or row.get("Game") or 0)
                 except ValueError:
                     continue
 
-                seats = []
-                for k in ("seat_0", "seat_1", "seat_2", "seat_3"):
-                    v = (row.get(k) or "").strip()
-                    if v == "":
-                        seats.append(None)
-                    else:
-                        try:
-                            seats.append(int(v))
-                        except ValueError:
-                            seats.append(v)
+                seats = [int(row.get(k)) for k in ("east seat", "south seat", "west seat", "north seat")]
+
 
                 rounds.setdefault(gr, []).append((game_idx, tuple(seats)))
 
