@@ -47,8 +47,9 @@ def mjs_call(method, path, payload=None, params=None, token=None, verbose=False)
     params = {} if not params else {**default_queryparams, **params}
     
     if verbose:
+        redacted_headers = {k: v for k, v in headers.items() if k != 'authorization'}
         print(f"Making {method} request to {url}")
-        print(f"Headers: {headers}")
+        print(f"Headers: {redacted_headers}")
         print(f"Query Params: {params}")
         if payload:
             print(f"Payload: {payload}")
@@ -67,7 +68,7 @@ def mjs_get(path, queryparams=None, token=None, verbose=False):
 def mjs_post(path, payload=None, queryparams=None, token=None, verbose=False):
     return mjs_call("POST", path, payload=payload, params=queryparams, token=token, verbose=verbose)
 
-def fetch_results_csv():
+def fetch_results_csv(verbose=False):
     """
     Fetches the results CSV from the API.
     
@@ -78,6 +79,6 @@ def fetch_results_csv():
         "offset": 0,
         "limit": 1000
     }
-    response = mjs_get("/fetch_contest_game_records", queryparams=params, verbose=True)
+    response = mjs_get("/fetch_contest_game_records", queryparams=params, verbose=verbose)
     response.raise_for_status()
     return response.json()["data"]["record_list"]

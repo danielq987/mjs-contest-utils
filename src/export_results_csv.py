@@ -1,11 +1,11 @@
 import csv
 import os
 from utils.api import fetch_results_csv
-from utils.helpers import get_env
+from utils.helpers import get_env, is_running_in_github_actions
 
 def export_results_csv():
     # Writes results to a CSV file. Used by GitHub Action.
-    contest_data = fetch_results_csv()
+    contest_data = fetch_results_csv(verbose=is_running_in_github_actions())
     
     csv_output_dir = get_env('CSV_OUTPUT_DIR', 'output')
     mjs_season_id = get_env('MJS_SEASON_ID', 1)
