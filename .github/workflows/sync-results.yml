@@ -22,6 +22,7 @@ jobs:
       MJS_UID: ${{ vars.MJS_UID }} 
       MJS_CONTEST_ID: ${{ vars.MJS_CONTEST_ID }}
       MJS_SEASON_ID: ${{ vars.MJS_SEASON_ID }}
+      CSV_OUTPUT_DIR: output
 
     steps:
       - name: 📥 Checkout Repository
