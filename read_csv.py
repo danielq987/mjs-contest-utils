@@ -16,6 +16,16 @@ def get_teams():
 
     return teams, team_names
 
+def get_individuals(path: str = "individuals.csv"):
+    individuals = []
+
+    with open(path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            individuals.append(list(row.values()))
+
+    return individuals
+
 def get_schedule(path: str = "schedule.csv"):
     """
     Load schedule as List[List[Tuple[seat0, seat1, seat2, seat3]]].
