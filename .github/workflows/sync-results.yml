@@ -19,10 +19,9 @@ jobs:
 
     env:
       MJS_SECRET: ${{ secrets.MJS_SECRET }}
-      CSV_OUTPUT_DIR: output
-      MJS_SEASON_ID: 2 # EDIT THIS TO CHANGE THE SEASON
-      # 1 - Spring 25
-      # 2 - Fall 25
+      MJS_UID: ${{ vars.MJS_UID }} 
+      MJS_CONTEST_ID: ${{ vars.MJS_CONTEST_ID }}
+      MJS_SEASON_ID: ${{ vars.MJS_SEASON_ID }}
 
     steps:
       - name: 📥 Checkout Repository
@@ -38,9 +37,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: ▶️ Run mjs.py
+      - name: ▶️ Run script
         run: |
-          python mjs.py
+          python src/export_results_csv.py
 
       - name: ☁️ Upload output.csv to S3
         uses: jakejarvis/s3-sync-action@master
