@@ -2,13 +2,13 @@ name: Export and Upload MahjongSoul Data
 
 on:
   schedule:
-    - cron: '30,35,40,45,50,55 1 * * 0,5,6'
+    - cron: '30,35,40,45,50,55 0 * * 0,5,6'
     # 9:00 PM to 9:50 PM EST == 02:00–02:50 UTC
-    - cron: '0,10,20,30,35,40,45,50,55 2 * * 0,5,6'
+    - cron: '0,10,20,30,35,40,45,50,55 1 * * 0,5,6'
     # 10:00 PM to 10:50 PM EST == 03:00–03:50 UTC
-    - cron: '0,10,20,30,35,40,45,50,55 3 * * 0,5,6'
+    - cron: '0,10,20,30,35,40,45,50,55 2 * * 0,5,6'
     # 11:00 PM to 11:30 PM EST == 04:00–04:30 UTC
-    - cron: '0,10,20,30,35,40,45,50,55 4 * * 0,5,6'
+    - cron: '0,10,20,30,35,40,45,50,55 3 * * 0,5,6'
     # Run at least once a day around midnight
     - cron: '0 5 * * *'
   workflow_dispatch:  # Allows manual trigger from the GitHub UI
