@@ -43,6 +43,8 @@ def export_results_csv():
             # Append data for seats 0 through 3
             for seat in range(4):
                 nickname = nickname_data.get(seat, "")
+                if not nickname:
+                    nickname = "computer"
                 part_point = player_data.get(seat, {}).get('part_point_1', "")
                 total_point = player_data.get(seat, {}).get('total_point', "")
                 row.extend([nickname, part_point, total_point])
