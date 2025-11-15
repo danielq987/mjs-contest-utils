@@ -5,7 +5,7 @@ from utils.helpers import get_env
 MJS_SECRET=get_env('MJS_SECRET')
 MJS_UID=get_env('MJS_UID')
 
-def get_auth_token(isVerbose=False):
+def get_auth_token():
     # Step 1: Exchange initial token for accessToken
     headers = {
         'accept': 'application/json, text/plain, */*',
@@ -24,7 +24,7 @@ def get_auth_token(isVerbose=False):
     response1.raise_for_status()  # Raises error if the request failed
     response_data = response1.json()
 
-    if isVerbose:
+    if get_env("VERBOSE"):
         print("Login Step 1 Response:")
         print(f"Status code {response1.status_code}")
         print(response_data)
@@ -45,7 +45,7 @@ def get_auth_token(isVerbose=False):
     response2 = requests.post(auth_url, headers=headers, json=auth_payload)
     response2.raise_for_status()
 
-    if isVerbose:
+    if get_env("VERBOSE"):
         print("Login Step 2 Response:")
         print(f"Status code {response2.status_code}")
         print(response2.json())
