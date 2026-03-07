@@ -33,7 +33,7 @@ def export_results_csv():
             row = [
                 game['start_time'],
                 game['end_time'],
-                game['tag']
+                game['tag'] if game['tag'] else "no_tag"
             ]
 
             # Create a dict of players by seat for quick lookup
