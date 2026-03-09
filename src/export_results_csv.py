@@ -30,6 +30,8 @@ def export_results_csv():
         writer.writerow(headers)
 
         for game in contest_data:
+            print(game)
+            print(game['tag'])
             row = [
                 game['start_time'],
                 game['end_time'],
